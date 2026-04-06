@@ -18,7 +18,7 @@
          "type": "system"
       }
    ],
-   "esmodules": ["scripts/main.js"],
+   "esmodules": ["src/main.js"],
    "styles": ["styles/styles.css"],
    "languages": [
       {
@@ -34,7 +34,7 @@
       {
          "lang": "uk",
          "name": "Українська",
-         "path": "languages/uk.json"
+         "path": "languages/ua.json"
       }
    ],
    "url": "#{URL}#",
