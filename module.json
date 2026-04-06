@@ -12,12 +12,6 @@
          "name": "Aztec"
       }
    ],
-   "systems": [
-      {
-         "id": "pf2e",
-         "type": "system"
-      }
-   ],
    "esmodules": ["src/main.js"],
    "styles": ["styles/styles.css"],
    "languages": [
