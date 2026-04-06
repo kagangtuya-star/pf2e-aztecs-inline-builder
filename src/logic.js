@@ -48,7 +48,7 @@ export class PF2eInlineLogic {
       parts.push(mappedKeys.join(","))
 
       if (state.dcMode === "dc") {
-         let dcVal = state.isLevelDC ? "@self-level" : state.dc
+         let dcVal = state.isLevelDC ? "@self.level" : state.dc
          if (state.isResolve && !state.isLevelDC && dcVal)
             dcVal = `resolve(${dcVal})`
          if (dcVal) parts.push(`dc:${dcVal}`)

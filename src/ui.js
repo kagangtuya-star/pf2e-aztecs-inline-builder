@@ -310,6 +310,11 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
                   }
                }
 
+               if (name === "type") {
+                  this.formData.customLabel = ""
+                  html.find('input[name="customLabel"]').val("")
+               }
+
                if (name === "actionSlug") {
                   const selectedAction = this.actions.find((a) => a.key === val)
                   const variants = selectedAction ? selectedAction.variants : []
