@@ -166,6 +166,7 @@
 .pf2e-inline-builder .show-lore,
 .pf2e-inline-builder .show-dc,
 .pf2e-inline-builder .show-fixed-dc,
+.pf2e-inline-builder .show-resolve-builder,
 .pf2e-inline-builder .show-against-input,
 .pf2e-inline-builder .show-defense-input,
 .pf2e-inline-builder .show-width-input,
@@ -233,8 +234,16 @@ form[data-dc-mode="dc"] .show-dc {
    display: block;
 }
 
-form[data-dc-mode="dc"][data-level-dc="false"] .show-fixed-dc {
+/* Fixed DC visibility logic */
+form[data-dc-mode="dc"][data-level-dc="false"][data-resolve="false"]
+   .show-fixed-dc {
    display: flex;
+}
+
+/* Resolve Builder visibility logic */
+form[data-dc-mode="dc"][data-level-dc="false"][data-resolve="true"]
+   .show-resolve-builder {
+   display: block;
 }
 
 form[data-dc-mode="against"] .show-against-input,

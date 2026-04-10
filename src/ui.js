@@ -50,6 +50,8 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
          removeCheckKey: this.onRemoveCheckKey,
          addSaveKey: this.onAddSaveKey,
          removeSaveKey: this.onRemoveSaveKey,
+         addResolveArg: this.onAddResolveArg,
+         removeResolveArg: this.onRemoveResolveArg,
       },
    }
 
@@ -165,6 +167,8 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
          defense: "",
          isLevelDC: false,
          isResolve: false,
+         resolveOp: "none",
+         resolveArgs: [""],
          showDC: "owner",
          rollerRole: "",
          basicSave: false,
@@ -250,12 +254,57 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
          canRemove: this.formData.damagePools.length > 1,
       }))
 
+      const resolveArgsMapped = this.formData.resolveArgs.map((val, idx) => ({
+         value: val,
+         index: idx,
+         label: `Value ${idx + 1}`,
+         canRemove:
+            (this.formData.resolveOp === "max" ||
+               this.formData.resolveOp === "min") &&
+            this.formData.resolveArgs.length > 2,
+      }))
+      const canAddResolveArg =
+         this.formData.resolveOp === "max" || this.formData.resolveOp === "min"
+
+      const commonPaths = [
+         "@actor.level",
+         "@item.level",
+         "@actor.attributes.classDC.value",
+         "@actor.attributes.spellDC.value",
+         "@actor.attributes.classOrSpellDC.value",
+         "@actor.attributes.hp.value",
+         "@actor.attributes.hp.max",
+         "@actor.attributes.ac.value",
+         "@actor.attributes.perception.value",
+         "@actor.saves.fortitude.value",
+         "@actor.skills.athletics.value",
+         "@actor.abilities.str.mod",
+         "@actor.attributes.speed.value",
+         "@actor.attributes.reach.value",
+         "@actor.initiative.value",
+         "@actor.resources.focus.value",
+         "@actor.resources.focus.max",
+         "@actor.resources.heroPoints.value",
+         "@actor.inventory.bulk.value",
+         "@actor.system.traits.size.value",
+      ]
+
+      const resolveOpTooltip = game.i18n.localize(
+         `PF2E-AZTECS.Tooltips.Resolve.${this.formData.resolveOp}`,
+      )
+
       return {
          ...(await super._prepareContext(options)),
          ...this.formData,
          checkKeysMapped,
          saveKeysMapped,
          damagePoolsMapped,
+         resolveArgsMapped,
+         canAddResolveArg,
+         commonPaths,
+         resolveOpTooltip,
+         saves: this.saves,
+         skills: this.skills,
          saves: this.saves,
          skills: this.skills,
          actions: this.actions,
@@ -286,6 +335,15 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
                const { name, value, type, checked } = target
                const val = type === "checkbox" ? checked : value
 
+               if (name === "isLevelDC" && checked) {
+                  this.formData.isResolve = false
+                  html.find('input[name="isResolve"]').prop("checked", false)
+               }
+               if (name === "isResolve" && checked) {
+                  this.formData.isLevelDC = false
+                  html.find('input[name="isLevelDC"]').prop("checked", false)
+               }
+
                if (name.startsWith("damagePools.")) {
                   const [, index, field] = name.split(".")
                   this.formData.damagePools[parseInt(index, 10)][field] = val
@@ -309,8 +367,36 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
                   this.formData.saveAdjValues[
                      parseInt(name.split(".")[1], 10)
                   ] = val
+               } else if (name.startsWith("resolveArgs.")) {
+                  this.formData.resolveArgs[parseInt(name.split(".")[1], 10)] =
+                     val
                } else {
                   this.formData[name] = val
+               }
+
+               if (name === "resolveOp") {
+                  if (
+                     val === "none" ||
+                     val === "abs" ||
+                     val === "floor" ||
+                     val === "ceil" ||
+                     val === "round"
+                  ) {
+                     this.formData.resolveArgs = [
+                        this.formData.resolveArgs[0] || "",
+                     ]
+                  } else if (val === "max" || val === "min") {
+                     if (this.formData.resolveArgs.length < 2) {
+                        this.formData.resolveArgs.push("")
+                     }
+                  } else if (val === "ternary") {
+                     while (this.formData.resolveArgs.length < 3)
+                        this.formData.resolveArgs.push("")
+                     this.formData.resolveArgs =
+                        this.formData.resolveArgs.slice(0, 3)
+                  }
+                  this.render()
+                  return
                }
 
                if (name.startsWith("checkAdjTypes.")) {
@@ -467,6 +553,16 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
       this.render()
    }
 
+   static onAddResolveArg(event, target) {
+      this.formData.resolveArgs.push("")
+      this.render()
+   }
+   static onRemoveResolveArg(event, target) {
+      const idx = parseInt(target.dataset.index, 10)
+      this.formData.resolveArgs.splice(idx, 1)
+      this.render()
+   }
+
    static async onCopy(event, target) {
       const text = $(this.element).find('textarea[name="preview"]').val()
       await PF2eInlineLogic.copyToClipboard(text)
@@ -496,6 +592,7 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
       }
    }
 
+   /* Private Helpers */
    #handleInterlock(form, inputName, selectName, triggerName) {
       if (triggerName === inputName) {
          if (this.formData[inputName] !== "") {

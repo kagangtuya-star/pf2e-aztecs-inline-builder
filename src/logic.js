@@ -52,9 +52,25 @@ export class PF2eInlineLogic {
       parts.push(mappedKeys.join(","))
 
       if (state.dcMode === "dc") {
-         let dcVal = state.isLevelDC ? "@self-level" : state.dc
-         if (state.isResolve && !state.isLevelDC && dcVal)
-            dcVal = `resolve(${dcVal})`
+         let dcVal = ""
+
+         if (state.isLevelDC) {
+            dcVal = "@self-level"
+         } else if (state.isResolve) {
+            const op = state.resolveOp
+            const args = state.resolveArgs.map((a) => a.trim() || "0")
+
+            if (op === "none") {
+               dcVal = `resolve(${args[0]})`
+            } else if (op === "ternary") {
+               dcVal = `resolve(${args[0]} ? ${args[1]} : ${args[2]})`
+            } else {
+               dcVal = `resolve(${op}(${args.join(",")}))`
+            }
+         } else {
+            dcVal = state.dc
+         }
+
          if (dcVal) parts.push(`dc:${dcVal}`)
       } else if (state.dcMode === "against") {
          parts.push(
@@ -66,7 +82,6 @@ export class PF2eInlineLogic {
          )
       }
 
-      // Compile parallel adjustments array
       const adjustments = keys.map((_, i) => {
          const t = adjTypes[i]
          const v = adjValues[i]
@@ -112,11 +127,11 @@ export class PF2eInlineLogic {
                case "precision":
                   return `(${formula} + ((${formula})[precision]))[${t}]`
                case "splash":
-                  return `(${formula}[splash])[${t}]`
+                  return `((${formula})[splash])[${t}]`
                case "persistent":
-                  return `${formula}[persistent,${t}]`
+                  return `(${formula})[persistent,${t}]`
                default:
-                  return t ? `${formula}[${t}]` : formula
+                  return t ? `(${formula})[${t}]` : formula
             }
          })
          .filter(Boolean)
