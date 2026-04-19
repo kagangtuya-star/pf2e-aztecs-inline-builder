@@ -80,12 +80,17 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
          key: k,
          label: game.i18n.localize(v.label || v),
       }))
-      this.skills = Object.entries(CONFIG.PF2E.skills)
-         .map(([k, v]) => ({
-            key: k,
-            label: game.i18n.localize(v.label || v),
-         }))
-         .sort((a, b) => a.label.localeCompare(b.label))
+
+      this.skills = Object.entries(CONFIG.PF2E.skills).map(([k, v]) => ({
+         key: k,
+         label: game.i18n.localize(v.label || v),
+      }))
+      this.skills.push({
+         key: "perception",
+         label: game.i18n.localize("PF2E.PerceptionLabel"),
+      })
+      this.skills.sort((a, b) => a.label.localeCompare(b.label))
+
       this.damageTypes = CONFIG.PF2E.damageTypes
 
       this.actions = Array.from(game.pf2e.actions.values())
@@ -305,8 +310,6 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
          resolveOpTooltip,
          saves: this.saves,
          skills: this.skills,
-         saves: this.saves,
-         skills: this.skills,
          actions: this.actions,
          currentVariants,
          conditions: this.conditions,
@@ -438,34 +441,10 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
                }
 
                if (name === "type") {
-                  this.formData.customLabel = ""
-                  this.formData.traits = ""
-                  this.formData.options = ""
-                  this.formData.chatCardName = ""
-                  this.formData.rollerRole = ""
-                  html.find('input[name="customLabel"]').val("")
-                  html.find('input[name="traits"]').val("")
-                  html.find('input[name="options"]').val("")
-                  html.find('input[name="chatCardName"]').val("")
-                  html.find('select[name="rollerRole"]').val("")
-
-                  this.formData.isResolve = false
-                  this.formData.immutable = false
-                  this.formData.overrideTraits = false
-                  html.find('input[name="isResolve"]').prop("checked", false)
-                  html.find('input[name="immutable"]').prop("checked", false)
-                  html
-                     .find('input[name="overrideTraits"]')
-                     .prop("checked", false)
-
-                  this.formData.checkAdjTypes.fill("")
-                  this.formData.checkAdjValues.fill("")
-                  this.formData.saveAdjTypes.fill("")
-                  this.formData.saveAdjValues.fill("")
-                  html.find('select[name^="checkAdjTypes"]').val("")
-                  html.find('input[name^="checkAdjValues"]').val("")
-                  html.find('select[name^="saveAdjTypes"]').val("")
-                  html.find('input[name^="saveAdjValues"]').val("")
+                  Object.assign(this.formData, this.#getDefaultData())
+                  this.formData.type = val
+                  this.render()
+                  return
                }
 
                if (name === "actionSlug") {

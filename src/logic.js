@@ -55,7 +55,7 @@ export class PF2eInlineLogic {
          let dcVal = ""
 
          if (state.isLevelDC) {
-            dcVal = "@self-level"
+            dcVal = "@self.level"
          } else if (state.isResolve) {
             const op = state.resolveOp
             const args = state.resolveArgs.map((a) => a.trim() || "0")
