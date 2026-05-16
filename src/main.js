@@ -8,7 +8,12 @@ Hooks.once("init", () => {
       name: "PF2E-AZTECS.Keybinding",
       hint: "PF2E-AZTECS.KeybindingHint",
       editable: [
-         { key: "KeyB", modifiers: [KeyboardManager.MODIFIER_KEYS.ALT] },
+         {
+            key: "KeyB",
+            modifiers: [
+               foundry.helpers.interaction.KeyboardManager.MODIFIER_KEYS.ALT,
+            ],
+         },
       ],
       onDown: () => {
          new PF2eInlineBuilderUI({
