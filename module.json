@@ -29,6 +29,11 @@
          "lang": "uk",
          "name": "Українська",
          "path": "languages/ua.json"
+      },
+      {
+         "lang": "cn",
+         "name": "简体中文",
+         "path": "languages/zh_Hans.json"
       }
    ],
    "url": "#{URL}#",
