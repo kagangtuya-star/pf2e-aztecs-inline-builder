@@ -209,12 +209,20 @@
             {{#each damagePoolsMapped}}
             <div class="form-group damage-row">
                 <div class="formula-split"><input type="number" name="damagePools.{{this.index}}.diceCount" value="{{this.diceCount}}" placeholder="2"><span class="dice-sep">d</span><input type="number" name="damagePools.{{this.index}}.diceFaces" value="{{this.diceFaces}}" placeholder="6"><span class="dice-sep">+</span><input type="number" name="damagePools.{{this.index}}.fixedValue" value="{{this.fixedValue}}" placeholder="4"></div>
+            {{#if (eq ../type "Healing")}}
+                <select name="damagePools.{{this.index}}.type" class="damage-type-select">
+                    <option value="untyped" {{#if (eq this.type "untyped")}}selected{{/if}}>{{localize "PF2E-AZTECS.Labels.Untyped"}}</option>
+                    <option value="vitality" {{#if (eq this.type "vitality")}}selected{{/if}}>{{localize "PF2E-AZTECS.Labels.Vitality"}}</option>
+                    <option value="void" {{#if (eq this.type "void")}}selected{{/if}}>{{localize "PF2E-AZTECS.Labels.Void"}}</option>
+                </select>
+                {{else}}
                 <select name="damagePools.{{this.index}}.type" class="damage-type-select">{{#each ../damageTypes}}<option value="{{@key}}" {{#if (eq ../this.type @key)}}selected{{/if}}>{{localize this}}</option>{{/each}}</select>
+                {{/if}}
                 <select name="damagePools.{{this.index}}.category" class="damage-cat-select"><option value="">None</option><option value="precision" {{#if (eq this.category "precision")}}selected{{/if}}>Precision</option><option value="persistent" {{#if (eq this.category "persistent")}}selected{{/if}}>Persistent</option><option value="splash" {{#if (eq this.category "splash")}}selected{{/if}}>Splash</option></select>
                 {{#if this.canRemove}}<button type="button" class="remove-btn" data-action="removeDamage" data-index="{{this.index}}"><i class="fas fa-trash"></i></button>{{/if}}
             </div>
             {{/each}}
-            <button type="button" data-action="addDamage" class="add-btn"><i class="fas fa-plus"></i> Add Damage Pool</button>
+            <button type="button" data-action="addDamage" class="add-btn"><i class="fas fa-plus"></i> {{#if (eq type "Healing")}}{{localize "PF2E-AZTECS.Labels.AddHealingPool"}}{{else}}Add Damage Pool{{/if}}</button>
             <div class="form-group"><label>Materials</label><input type="text" name="materials" value="{{materials}}" placeholder="silver, cold-iron"></div>
         </div>
 

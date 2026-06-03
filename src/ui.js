@@ -453,7 +453,7 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
                if (name === "type") {
                   const baseData = this.#getDefaultData()
                   if (val === "Healing") {
-                     baseData.damagePools[0].type = "healing"
+                     baseData.damagePools[0].type = "untyped"
                   }
                   Object.assign(this.formData, baseData)
                   this.formData.type = val
@@ -502,17 +502,17 @@ export class PF2eInlineBuilderUI extends HandlebarsApplicationMixin(
          )
    }
 
-   /* Action handlers */
-   static onAddDamageRow(event, target) {
+   static onAddDamageRow() {
       this.formData.damagePools.push({
          diceCount: "",
          diceFaces: "",
          fixedValue: "",
-         type: "slashing",
+         type: this.formData.type === "Healing" ? "untyped" : "slashing",
          category: "",
       })
       this.render()
    }
+
    static onRemoveDamageRow(event, target) {
       this.formData.damagePools.splice(parseInt(target.dataset.index, 10), 1)
       this.render()

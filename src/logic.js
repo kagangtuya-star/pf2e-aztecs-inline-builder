@@ -125,7 +125,14 @@ export class PF2eInlineLogic {
 
             if (!formula) return null
 
-            const t = p.type || "slashing"
+            let t = p.type || "slashing"
+            if (state.type === "Healing") {
+               if (t === "untyped") t = "healing"
+               else if (t === "vitality") t = "vitality,healing"
+               else if (t === "void") t = "void,healing"
+               else t = "healing"
+            }
+
             switch (p.category) {
                case "precision":
                   return `(${formula} + ((${formula})[precision]))[${t}]`
