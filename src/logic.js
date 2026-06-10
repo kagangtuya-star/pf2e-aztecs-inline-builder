@@ -171,7 +171,9 @@ export class PF2eInlineLogic {
 
    static #buildTemplate(state) {
       const parts = [`type:${state.shape}`, `distance:${state.distance}`]
-      if (state.shape === "line") parts.push(`width:${state.width || 5}`)
+      if (state.shape === "line" || state.shape === "square") {
+         parts.push(`width:${state.width || 5}`)
+      }
       return `@Template[${parts.join("|")}]`
    }
 

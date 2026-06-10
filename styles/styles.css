@@ -265,7 +265,8 @@ form[data-has-lore="true"] .show-lore {
    display: flex;
 }
 
-form[data-shape="line"] .show-width-input {
+form[data-shape="line"] .show-width-input,
+form[data-shape="square"] .show-width-input {
    display: flex;
 }
 
